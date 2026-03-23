@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Reveal Invitation</title>
+    <style>
+        :root {
+            --door-w: 601px;
+            --door-h: 1641px;
+            --gold: #D4AF37;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', serif;
+        }
+
+        /* The Door Overlay */
+        #gate-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            background: radial-gradient(circle, #4A0404 0%, #1a0000 100%);
+            cursor: pointer;
+            transition: opacity 1.5s ease 2.5s;
+        }
+
+        /* Precise Door Scaling */
+        .door-frame {
+            display: flex;
+            width: calc(var(--door-w) * 2);
+            height: var(--door-h);
+            max-height: 92vh; /* Fits perfectly on most screens */
+            aspect-ratio: 1202 / 1641;
+            position: relative;
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+
+        .door {
+            width: 50%; height: 100%;
+            background-image: url('door.jpg');
+            background-size: 200% 100%; /* Spans across both doors */
+            transition: transform 3.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+
+        .door-left {
+            background-position: left center;
+            border-right: 1px solid rgba(0,0,0,0.6);
+        }
+
+        .door-right {
+            background-position: right center;
+        }
+
+        /* Animation Trigger */
+        #gate-container.open .door-left { transform: translateX(-102%); }
+        #gate-container.open .door-right { transform: translateX(102%); }
+        #gate-container.open { pointer-events: none; opacity: 0; }
+
+        /* Invitation Images */
+        .invitation-flow {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            background: #000;
+        }
+
+        .image-stack {
+            width: 100%;
+            max-width: 900px;
+            line-height: 0;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .image-stack img {
+            width: 100%;
+            display: block;
+            margin-bottom: -1px; /* Removes cracks */
+        }
+
+        .tap-prompt {
+            position: absolute; bottom: 8%; color: var(--gold);
+            letter-spacing: 5px; font-size: 14px;
+            text-shadow: 0 0 15px #000;
+            animation: breathe 2.5s infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.3; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gate-container" onclick="openAndPlay()">
+        <div class="door-frame">
+            <div class="door door-left"></div>
+            <div class="door door-right"></div>
+        </div>
+        <div class="tap-prompt">CLICK TO OPEN</div>
+    </div>
+
+    <audio id="invitationMusic" loop>
+        <source src="loveym.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="invitation-flow">
+        <div class="image-stack">
+            <img src="1.png">
+            <img src="2.png">
+            <img src="3.png">
+            <img src="4.png">
+            <img src="5.png">
+            <img src="6.png">
+            <img src="7.png">
+        </div>
+    </div>
+
+    <script>
+        function openAndPlay() {
+            const gate = document.getElementById('gate-container');
+            const music = document.getElementById('invitationMusic');
+
+            // Start Door Animation
+            gate.classList.add('open');
+
+            // Initialize Audio with Fade-in
+            music.volume = 0;
+            music.play().then(() => {
+                let vol = 0;
+                const fade = setInterval(() => {
+                    if (vol < 0.7) {
+                        vol += 0.02;
+                        music.volume = parseFloat(vol.toFixed(2));
+                    } else {
+                        clearInterval(fade);
+                    }
+                }, 150); // Smooth 5-second fade-in
+            }).catch(e => {
+                console.log("Audio play failed. Check if loveym.mp3 exists in the folder.");
+            });
+        }
+    </script>
+</body>
+</html>
